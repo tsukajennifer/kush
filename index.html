@@ -1,3 +1,186 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>パチンコ・スロット収支計算</title>
+    <style>
+        /* 全体のスタイル */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f5;
+        }
+
+        /* コンテナ */
+        .container {
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 見出し */
+        h1 {
+            font-size: 1.5rem;
+            color: #333333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* ラベル */
+        label {
+            display: block;
+            font-size: 0.9rem;
+            color: #555555;
+            margin-bottom: 5px;
+        }
+
+        /* 入力フィールドとセレクトボックス */
+        input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #dddddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        /* ボタン */
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* 結果表示 */
+        h2 {
+            font-size: 1.2rem;
+            color: #333333;
+            margin-top: 20px;
+        }
+
+        p {
+            font-size: 1rem;
+            color: #555555;
+            margin-bottom: 10px;
+        }
+
+        /* 店舗リスト */
+        .store-list {
+            margin-top: 10px;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        /* スマホに最適化 */
+        @media (max-width: 400px) {
+            .container {
+                margin: 10px;
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
 <body>
-  hello world
+    <div class="container">
+        <h1>収支計算ツール</h1>
+        <!-- メダル入力 -->
+        <label for="startTokens">最初のメダル数:</label>
+        <input type="number" id="startTokens" placeholder="例: 500">
+
+        <label for="endTokens">終わりのメダル数:</label>
+        <input type="number" id="endTokens" placeholder="例: 1000">
+
+        <!-- 換金率選択 -->
+        <label for="exchangeRate">換金率:</label>
+        <select id="exchangeRate">
+            <option value="20">20円/枚</option>
+            <option value="21.27">21.27円/枚</option>
+            <option value="22.5">22.5円/枚</option>
+        </select>
+
+        <!-- 店舗登録 -->
+        <label for="storeName">店舗名を登録 (任意):</label>
+        <input type="text" id="storeName" placeholder="例: パチンコキング">
+
+        <button onclick="calculateProfit()">計算</button>
+        <button onclick="registerStore()">店舗を登録</button>
+
+        <!-- 結果表示 -->
+        <h2>結果:</h2>
+        <p id="profit"></p>
+        <p id="storeListTitle"></p>
+        <div id="storeList" class="store-list"></div>
+    </div>
+
+    <script>
+        const stores = {};
+
+        function calculateProfit() {
+            const startTokens = parseFloat(document.getElementById("startTokens").value) || 0;
+            const endTokens = parseFloat(document.getElementById("endTokens").value) || 0;
+            const exchangeRate = parseFloat(document.getElementById("exchangeRate").value) || 0;
+
+            const profitTokens = endTokens - startTokens;
+            const profitYen = profitTokens * exchangeRate;
+
+            document.getElementById("profit").textContent = `収益: ¥${profitYen.toFixed(2)} （メダル差: ${profitTokens}枚）`;
+        }
+
+        function registerStore() {
+            const storeName = document.getElementById("storeName").value.trim();
+            const exchangeRate = document.getElementById("exchangeRate").value;
+
+            if (storeName) {
+                if (!stores[exchangeRate]) {
+                    stores[exchangeRate] = [];
+                }
+                stores[exchangeRate].push(storeName);
+
+                // 更新
+                updateStoreList();
+                document.getElementById("storeName").value = ""; // 入力欄クリア
+            }
+        }
+
+        function updateStoreList() {
+            const storeList = document.getElementById("storeList");
+            storeList.innerHTML = ""; // リストをクリア
+            const storeListTitle = document.getElementById("storeListTitle");
+
+            // 店舗をリスト化
+            if (Object.keys(stores).length > 0) {
+                storeListTitle.textContent = "登録された店舗:";
+                for (const [rate, storeNames] of Object.entries(stores)) {
+                    const rateDiv = document.createElement("div");
+                    rateDiv.textContent = `${rate}円/枚: ${storeNames.join(", ")}`;
+                    storeList.appendChild(rateDiv);
+                }
+            } else {
+                storeListTitle.textContent = "";
+            }
+        }
+    </script>
 </body>
+</html>
+
