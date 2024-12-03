@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>パチンコ・スロット収支計算</title>
+    <title>収支計算</title>
     <style>
         /* 全体のスタイル */
         body {
@@ -41,7 +41,7 @@
 
         /* 入力フィールドとセレクトボックス */
         input[type="number"], select {
-            width: 100%;
+            width: 95%;
             padding: 10px;
             margin-bottom: 15px;
             border: 1px solid #dddddd;
@@ -79,15 +79,6 @@
             margin-bottom: 10px;
         }
 
-        /* 店舗リスト */
-        .store-list {
-            margin-top: 10px;
-            background-color: #f9f9f9;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-
         /* スマホに最適化 */
         @media (max-width: 400px) {
             .container {
@@ -114,28 +105,21 @@
         <!-- 換金率選択 -->
         <label for="exchangeRate">換金率:</label>
         <select id="exchangeRate">
-            <option value="20">20円/枚</option>
-            <option value="21.27">21.27円/枚</option>
-            <option value="22.5">22.5円/枚</option>
+            <option value="21.73">×21.73</option>
+            <option value="21.2954">×21.73×0.98</option>
+            <option value="19.3675889328">÷50.6×1000×0.98</option>
+            <option value="20">×20</option>
+            <option value="×10">×10</option>
         </select>
 
-        <!-- 店舗登録 -->
-        <label for="storeName">店舗名を登録 (任意):</label>
-        <input type="text" id="storeName" placeholder="例: パチンコキング">
-
         <button onclick="calculateProfit()">計算</button>
-        <button onclick="registerStore()">店舗を登録</button>
 
         <!-- 結果表示 -->
         <h2>結果:</h2>
         <p id="profit"></p>
-        <p id="storeListTitle"></p>
-        <div id="storeList" class="store-list"></div>
     </div>
 
     <script>
-        const stores = {};
-
         function calculateProfit() {
             const startTokens = parseFloat(document.getElementById("startTokens").value) || 0;
             const endTokens = parseFloat(document.getElementById("endTokens").value) || 0;
@@ -144,43 +128,10 @@
             const profitTokens = endTokens - startTokens;
             const profitYen = profitTokens * exchangeRate;
 
-            document.getElementById("profit").textContent = `収益: ¥${profitYen.toFixed(2)} （メダル差: ${profitTokens}枚）`;
-        }
-
-        function registerStore() {
-            const storeName = document.getElementById("storeName").value.trim();
-            const exchangeRate = document.getElementById("exchangeRate").value;
-
-            if (storeName) {
-                if (!stores[exchangeRate]) {
-                    stores[exchangeRate] = [];
-                }
-                stores[exchangeRate].push(storeName);
-
-                // 更新
-                updateStoreList();
-                document.getElementById("storeName").value = ""; // 入力欄クリア
-            }
-        }
-
-        function updateStoreList() {
-            const storeList = document.getElementById("storeList");
-            storeList.innerHTML = ""; // リストをクリア
-            const storeListTitle = document.getElementById("storeListTitle");
-
-            // 店舗をリスト化
-            if (Object.keys(stores).length > 0) {
-                storeListTitle.textContent = "登録された店舗:";
-                for (const [rate, storeNames] of Object.entries(stores)) {
-                    const rateDiv = document.createElement("div");
-                    rateDiv.textContent = `${rate}円/枚: ${storeNames.join(", ")}`;
-                    storeList.appendChild(rateDiv);
-                }
-            } else {
-                storeListTitle.textContent = "";
-            }
+            document.getElementById("profit").textContent = `収益: ${profitYen.toFixed()} 円（メダル差: ${profitTokens}枚）`;
         }
     </script>
 </body>
 </html>
+
 
